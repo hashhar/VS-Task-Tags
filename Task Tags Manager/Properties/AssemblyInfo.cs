@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Task_Tags_Manager")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Task Tags Manager")]
+[assembly: AssemblyDescription("Highlights and manages task tag tokens in comments.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Task_Tags_Manager")]
-[assembly: AssemblyCopyright("")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCompany("Ashhar Hasan")]
+[assembly: AssemblyProduct("Task Tags Manager")]
+[assembly: AssemblyCopyright("Copyright © 2015 - 2016 Ashhar Hasan")]
+[assembly: AssemblyTrademark("Ashhar Hasan")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
