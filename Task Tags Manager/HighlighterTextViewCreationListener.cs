@@ -1,10 +1,4 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="HighlighterTextViewCreationListener.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
@@ -29,7 +23,7 @@ namespace Task_Tags_Manager
 		[Export(typeof(AdornmentLayerDefinition))]
 		[Name("Highlighter")]
 		[Order(After = PredefinedAdornmentLayers.Selection, Before = PredefinedAdornmentLayers.Text)]
-		private AdornmentLayerDefinition editorAdornmentLayer;
+		private AdornmentLayerDefinition _editorAdornmentLayer;
 
 #pragma warning restore 649, 169
 

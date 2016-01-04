@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Text.Formatting;
 namespace Task_Tags_Manager
 {
 	/// <summary>
-	/// Highlighter places red boxes behind all the "a"s in the editor window
+	/// Highlighter places red boxes behind all the "TODO"s in the editor window
 	/// </summary>
 	internal sealed class Highlighter
 	{
@@ -46,13 +46,14 @@ namespace Task_Tags_Manager
 			_adornmentLayer = wpfTextView.GetAdornmentLayer("Highlighter");
 
 			_wpfTextView = wpfTextView;
-			_wpfTextView.LayoutChanged += OnLayoutChanged;
+			// Listen to any event that changes the layout (text changes, scrolling, etc)
+			_wpfTextView.LayoutChanged += this.OnLayoutChanged;
 
-			// Create the pen and brush to color the box behind the a's
-			_brush = new SolidColorBrush(Color.FromArgb(0x20, 0x00, 0x00, 0xff));
+			// Create the pen and brush to color the box behind the TODO's
+			_brush = new SolidColorBrush(Color.FromArgb(63, 221, 255, 0));
 			_brush.Freeze();
 
-			var penBrush = new SolidColorBrush(Colors.Red);
+			var penBrush = new SolidColorBrush(Color.FromArgb(255, 221, 255, 0));
 			penBrush.Freeze();
 			_pen = new Pen(penBrush, 0.5);
 			_pen.Freeze();
@@ -67,47 +68,54 @@ namespace Task_Tags_Manager
 		/// </remarks>
 		/// <param name="sender">The event sender.</param>
 		/// <param name="e">The event arguments.</param>
-		internal void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
+		private void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
 		{
 			foreach (ITextViewLine line in e.NewOrReformattedLines)
 			{
-				CreateVisuals(line);
+				this.CreateVisuals(line);
 			}
 		}
 
 		/// <summary>
-		/// Adds the scarlet box behind the 'a' characters within the given line
+		/// Adds the adornment behind the "TODO"s within the given line
 		/// </summary>
 		/// <param name="line">Line to add the adornments</param>
 		private void CreateVisuals(ITextViewLine line)
 		{
 			IWpfTextViewLineCollection textViewLines = _wpfTextView.TextViewLines;
 
-			// Loop through each character, and place a box around any 'a'
+			// Loop through each character
 			for (int charIndex = line.Start; charIndex < line.End; charIndex++)
 			{
-				if (_wpfTextView.TextSnapshot[charIndex] == 'a')
+				// Check if the current letter is 'T' and the buffer is large enough so that a "TODO" may exist
+				if (_wpfTextView.TextSnapshot[charIndex] == 'T' && charIndex + 4 < line.End)
 				{
-					SnapshotSpan span = new SnapshotSpan(_wpfTextView.TextSnapshot, Span.FromBounds(charIndex, charIndex + 1));
-					Geometry geometry = textViewLines.GetMarkerGeometry(span);
-					if (geometry != null)
+					// Get a string of 4 characters starting from the 'T'
+					string snapshot = _wpfTextView.TextSnapshot.GetText(charIndex, 4);
+					// Is the string a TODO?
+					if (snapshot.Equals("TODO"))
 					{
-						var drawing = new GeometryDrawing(_brush, _pen, geometry);
-						drawing.Freeze();
-
-						var drawingImage = new DrawingImage(drawing);
-						drawingImage.Freeze();
-
-						var image = new Image
+						SnapshotSpan span = new SnapshotSpan(_wpfTextView.TextSnapshot, Span.FromBounds(charIndex, charIndex + 4));
+						Geometry geometry = textViewLines.GetMarkerGeometry(span);
+						if (geometry != null)
 						{
-							Source = drawingImage,
-						};
+							var drawing = new GeometryDrawing(_brush, _pen, geometry);
+							drawing.Freeze();
 
-						// Align the image with the top of the bounds of the text geometry
-						Canvas.SetLeft(image, geometry.Bounds.Left);
-						Canvas.SetTop(image, geometry.Bounds.Top);
+							var drawingImage = new DrawingImage(drawing);
+							drawingImage.Freeze();
 
-						_adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
+							var image = new Image
+							{
+								Source = drawingImage,
+							};
+
+							// Align the image with the top of the bounds of the text geometry
+							Canvas.SetLeft(image, geometry.Bounds.Left);
+							Canvas.SetTop(image, geometry.Bounds.Top);
+
+							_adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
+						}
 					}
 				}
 			}

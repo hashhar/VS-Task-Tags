@@ -14,7 +14,7 @@
     <AssemblyInfoVersionSettings>IncrementOnDemand.IncrementOnDemand.IncrementOnDemandWithReset.Increment</AssemblyInfoVersionSettings>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <AssemblyVersion>1.0.0.3</AssemblyVersion>
+    <AssemblyVersion>0.1.0.7</AssemblyVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
