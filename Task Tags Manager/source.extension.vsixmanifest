@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="Task_Tags_Manager.Ashhar Hasan.3233268a-a9d3-4cfe-96ee-d80578cc9182" Version="1.0" Language="en-US" Publisher="Ashhar Hasan" />
+		<Identity Id="Task_Tags_Manager.Ashhar Hasan.3233268a-a9d3-4cfe-96ee-d80578cc9182" Version="0.1" Language="en-US" Publisher="Ashhar Hasan" />
 		<DisplayName>Task_Tags_Manager</DisplayName>
 		<Description xml:space="preserve">A Visual Studio extension that highlights (and manages) task tags within comments in the Editor Window.</Description>
 		<MoreInfo>http://VS-Task-Tags.github.io</MoreInfo>
@@ -21,4 +21,7 @@
 	<Dependencies>
 		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
 	</Dependencies>
+	<Assets>
+		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+	</Assets>
 </PackageManifest>
