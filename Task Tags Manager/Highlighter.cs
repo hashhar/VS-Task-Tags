@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Formatting;
 
 namespace Task_Tags_Manager
 {
@@ -40,14 +40,14 @@ namespace Task_Tags_Manager
 		{
 			if (wpfTextView == null)
 			{
-				throw new ArgumentNullException("wpfTextView");
+				throw new ArgumentNullException(nameof(wpfTextView));
 			}
 
 			_adornmentLayer = wpfTextView.GetAdornmentLayer("Highlighter");
 
 			_wpfTextView = wpfTextView;
 			// Listen to any event that changes the layout (text changes, scrolling, etc)
-			_wpfTextView.LayoutChanged += this.OnLayoutChanged;
+			_wpfTextView.LayoutChanged += OnLayoutChanged;
 
 			// Create the pen and brush to color the box behind the TODO's
 			_brush = new SolidColorBrush(Color.FromArgb(63, 221, 255, 0));
@@ -70,20 +70,29 @@ namespace Task_Tags_Manager
 		/// <param name="e">The event arguments.</param>
 		private void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
 		{
-			foreach (ITextViewLine line in e.NewOrReformattedLines)
+			foreach (var line in e.NewOrReformattedLines)
 			{
-				this.CreateVisuals(line);
+				CreateVisuals();
 			}
 		}
 
 		/// <summary>
 		/// Adds the adornment behind the "TODO"s within the given line
 		/// </summary>
-		/// <param name="line">Line to add the adornments</param>
-		private void CreateVisuals(ITextViewLine line)
+		private void CreateVisuals()
 		{
-			IWpfTextViewLineCollection textViewLines = _wpfTextView.TextViewLines;
-
+			var textViewLines = _wpfTextView.TextViewLines;
+			var text = textViewLines.FormattedSpan.Snapshot.GetText();
+			var todoRegex = new Regex(@"\/\/\s*TODO\b");
+			var match = todoRegex.Match(text);
+			while (match.Success)
+			{
+				var matchStart = match.Index;
+				var span = new SnapshotSpan(_wpfTextView.TextSnapshot, Span.FromBounds(matchStart, matchStart + match.Length));
+				DrawAdornment(textViewLines, span);
+				match = match.NextMatch();
+			}
+			/*
 			// Loop through each character
 			for (int charIndex = line.Start; charIndex < line.End; charIndex++)
 			{
@@ -96,28 +105,34 @@ namespace Task_Tags_Manager
 					if (snapshot.Equals("TODO"))
 					{
 						SnapshotSpan span = new SnapshotSpan(_wpfTextView.TextSnapshot, Span.FromBounds(charIndex, charIndex + 4));
-						Geometry geometry = textViewLines.GetMarkerGeometry(span);
-						if (geometry != null)
-						{
-							var drawing = new GeometryDrawing(_brush, _pen, geometry);
-							drawing.Freeze();
-
-							var drawingImage = new DrawingImage(drawing);
-							drawingImage.Freeze();
-
-							var image = new Image
-							{
-								Source = drawingImage,
-							};
-
-							// Align the image with the top of the bounds of the text geometry
-							Canvas.SetLeft(image, geometry.Bounds.Left);
-							Canvas.SetTop(image, geometry.Bounds.Top);
-
-							_adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
-						}
+						DrawAdornment(textViewLines, span);
 					}
 				}
+			}
+			*/
+		}
+
+		private void DrawAdornment(IWpfTextViewLineCollection textViewLines, SnapshotSpan span)
+		{
+			var geometry = textViewLines.GetMarkerGeometry(span);
+			if (geometry != null)
+			{
+				var drawing = new GeometryDrawing(_brush, _pen, geometry);
+				drawing.Freeze();
+
+				var drawingImage = new DrawingImage(drawing);
+				drawingImage.Freeze();
+
+				var image = new Image
+				{
+					Source = drawingImage,
+				};
+
+				// Align the image with the top of the bounds of the text geometry
+				Canvas.SetLeft(image, geometry.Bounds.Left);
+				Canvas.SetTop(image, geometry.Bounds.Top);
+
+				_adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
 			}
 		}
 	}
