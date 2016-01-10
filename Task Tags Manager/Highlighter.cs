@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Formatting;
 
 namespace Task_Tags_Manager
 {
@@ -72,17 +73,19 @@ namespace Task_Tags_Manager
 		{
 			foreach (var line in e.NewOrReformattedLines)
 			{
-				CreateVisuals();
+				CreateVisuals(line);
 			}
 		}
 
 		/// <summary>
 		/// Adds the adornment behind the "TODO"s within the given line
 		/// </summary>
-		private void CreateVisuals()
+		/// <param name="line"></param>
+		private void CreateVisuals(ITextViewLine line)
 		{
 			var textViewLines = _wpfTextView.TextViewLines;
-			var text = textViewLines.FormattedSpan.Snapshot.GetText();
+			var text = line.Snapshot.GetText();
+			//var text = textViewLines.FormattedSpan.Snapshot.GetText();
 			var todoRegex = new Regex(@"\/\/\s*TODO\b");
 			var match = todoRegex.Match(text);
 			while (match.Success)
@@ -92,8 +95,7 @@ namespace Task_Tags_Manager
 				DrawAdornment(textViewLines, span);
 				match = match.NextMatch();
 			}
-			/*
-			// Loop through each character
+			/*// Loop through each character
 			for (int charIndex = line.Start; charIndex < line.End; charIndex++)
 			{
 				// Check if the current letter is 'T' and the buffer is large enough so that a "TODO" may exist
@@ -108,8 +110,7 @@ namespace Task_Tags_Manager
 						DrawAdornment(textViewLines, span);
 					}
 				}
-			}
-			*/
+			}*/
 		}
 
 		private void DrawAdornment(IWpfTextViewLineCollection textViewLines, SnapshotSpan span)
