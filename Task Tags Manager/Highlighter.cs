@@ -85,17 +85,18 @@ namespace Task_Tags_Manager
 		{
 			var textViewLines = _wpfTextView.TextViewLines;
 			var text = line.Extent.GetText();
-			//line.Snapshot.GetText();
-			//var text = textViewLines.FormattedSpan.Snapshot.GetText();
-			var todoRegex = new Regex(@"\/\/\s*TODO\b");
+			// TODO: Add support for block comments
+			var todoRegex = new Regex(@"\/\/\s*TODO\b", RegexOptions.IgnoreCase);
 			var match = todoRegex.Match(text);
 			while (match.Success)
 			{
 				var matchStart = match.Index;
-				var span = new SnapshotSpan(_wpfTextView.TextSnapshot, Span.FromBounds(matchStart, matchStart + match.Length));
+				var lineStart = line.Extent.Start.Position;
+				var span = new SnapshotSpan(_wpfTextView.TextSnapshot, Span.FromBounds(matchStart + lineStart, matchStart + lineStart + match.Length));
 				DrawAdornment(textViewLines, span);
 				match = match.NextMatch();
 			}
+			// TODO: Evaluate the performance of below algo and RegEx
 			/*// Loop through each character
 			for (int charIndex = line.Start; charIndex < line.End; charIndex++)
 			{
