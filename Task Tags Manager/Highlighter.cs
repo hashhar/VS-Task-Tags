@@ -84,7 +84,8 @@ namespace Task_Tags_Manager
 		private void CreateVisuals(ITextViewLine line)
 		{
 			var textViewLines = _wpfTextView.TextViewLines;
-			var text = line.Snapshot.GetText();
+			var text = line.Extent.GetText();
+			//line.Snapshot.GetText();
 			//var text = textViewLines.FormattedSpan.Snapshot.GetText();
 			var todoRegex = new Regex(@"\/\/\s*TODO\b");
 			var match = todoRegex.Match(text);
